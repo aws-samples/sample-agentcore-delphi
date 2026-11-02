@@ -1,64 +1,98 @@
-# Delphi — Smart Routing on Amazon Bedrock AgentCore
+# Delphi: cross-model routing on Amazon Bedrock AgentCore
 
-A learned, cross-model query router deployed on AgentCore Runtime that predicts, per request, which candidate foundation model will produce the best response — and a rigorous test harness for whether it beats any single-model backend on the quality/cost/latency frontier.
+Delphi is a learned query router. It reads each request, predicts which foundation model in a
+**candidate pool** will answer it best, and sends the request to that model through the Amazon
+Bedrock Converse API. The router runs serverless on Amazon Bedrock AgentCore Runtime. Delphi also
+comes with a test harness that checks whether routing beats sending every request to one model,
+and reports a negative result when it does not.
 
-Amazon Bedrock already ships a native router,
+Amazon Bedrock already has a native router,
 [Intelligent Prompt Routing](https://docs.aws.amazon.com/bedrock/latest/userguide/prompt-routing.html),
-which routes each request between foundation models within the same model family, so its choice
-is a same-family one. Delphi routes across model families: its candidate pool is cross-family, and
-the router learns which family's model to call for each request. The reasoning behind that
-choice is in [`docs/design.md`](docs/design.md).
+which chooses between models in the same model family, for example a smaller and a larger Claude
+model: a same-family choice. Delphi routes across model families, such as Nova, Llama, Gemma and
+Claude, and learns which family's model to call for each request. The reasoning behind that
+design is in [`docs/design.md`](docs/design.md).
 
-A deployed Delphi arm proves the mechanism (route, then Bedrock Converse, then a decision
-record), not routing quality. The router is synthetic-trained today, so nothing in this
-repository is a verdict on whether routing pays off.
+This repository is the companion code for a blog post on AWS Builder Center, which walks through
+how the router is built, the tests it has to pass, and what happened against real Bedrock
+models.
 
-Full goal / TDD / delivery plan: [`docs/design.md`](docs/design.md).
+This is sample code, for non-production usage. Work with your security and legal teams to meet
+your organizational requirements before deployment.
 
-## Status
+## How Delphi works
 
-**Phases 0–2 built and exercised offline** against a synthetic dataset (no AWS required):
-- **Phase 0** — scaffolding, statistical core, agent skeleton, grounded Phase 1 budget.
-- **Phase 1** — response-matrix pipeline + oracle gate; runs end to end on the synthetic "Delphi Trials".
-- **Phase 2** — router training (linear/prototype/knn), validation selection, artifact round-trip into the request path.
+![Delphi architecture on AWS](docs/delphi-architecture.png)
 
-**Phase 3** — deployment is built: the CDK app defines one stack per arm in `ARMS`, and two arms
-deploy to AgentCore Runtime, each by name: `Delphi-router` and `Delphi-pinned-nova-lite`. The other
-pinned arms are not part of this release (the unit that would have added them was dropped), and
-the `ipr` arm is not implemented; the app defines no stack for any of them. `delphi-verify` checks a deployed arm end to end (see [Verify a deployment](#verify-a-deployment)).
-That proves the mechanism, not routing quality, because the deployed router is synthetic-trained.
+Delphi has three parts:
 
-Real-data runs (Phase 1 proper, Phase 4 verdict) are gated on the domain dataset + Bedrock creds; the code swaps the synthetic answer source for Bedrock Converse with the rest of the pipeline unchanged. Later-phase data-gated tests are wired and marked `xfail`.
+- **The router agent** reads a prompt, turns it into a feature vector, predicts a quality score
+  for each candidate model, and calls the model with the highest score. It runs in a container
+  on AgentCore Runtime. The routing decision is a small calculation inside the container, so it
+  adds no network call. Each request writes one **decision record**: the chosen model, the
+  predicted scores, the tokens used and the cost.
+- **The offline pipeline** builds the data the router learns from. It sends every question in a
+  dataset to every candidate model, scores each answer and records its cost. The result is the
+  **response matrix**: one row per question, one column per model. The best possible router,
+  the **oracle**, picks the top-scoring model for every question with hindsight; the gap between
+  the oracle and the best single model is the most routing can ever gain.
+- **The evaluation harness** decides whether routing was worth it. It runs statistical tests
+  against three hypotheses (below), and an **oracle gate** stops the experiment early when the
+  models fail on the same questions, because no router can help then.
 
-## Layout
+For the request path, the router can be one of three families: linear, prototype or k-nearest
+neighbours. Each is trained offline on the response matrix and chosen on a validation split.
 
+## Run the method offline
+
+You can run the whole method on your own machine first. It needs no AWS account, no
+credentials and no network:
+
+```bash
+python3 -m venv .venv && .venv/bin/pip install -e '.[dev]'
+.venv/bin/python scripts/run_phase1_synthetic.py   # build the response matrix, run the oracle gate
+.venv/bin/python scripts/run_phase2_synthetic.py   # train the router families, select, round-trip
 ```
-config/            models.yaml (pinned price snapshot + candidate pool), workload.yaml
-src/delphi/
-  config.py        candidate pool + pricing model (single source of cost truth)
-  router/          Router contract, trivial baselines + oracle, learned-router wrapper, embedders
-  agent/           app.py (core), entrypoint.py (BedrockAgentCoreApp), bedrock.py (Converse),
-                   runtime_client.py (invoke_agent_runtime), telemetry.py (decision records)
-  data/            query schema, "Delphi Trials" synthetic generator + council, split
-  eval/            response matrix, statistical tests, cost, contamination, scoring, gate, build_matrix
-  train/           router families (linear/prototype/knn), training+selection harness, artifact store
-infra/             CDK app — L1 aws_bedrockagentcore.CfnRuntime, one stack per arm
-Dockerfile         ARM64 container image (runs the SDK entrypoint on :8080)
-tests/             T-STAT / T-RTR / T-INF / T-CMP suites (design §3)
-scripts/           estimate_phase1_budget.py (grounded token-budget model)
-docs/              design.md, agent_scoping.md, deployment.md, phase0_checklist.md,
-                   phase1_budget.md, phase1_pipeline.md, phase2_training.md
-```
+
+Both scripts use the synthetic "Delphi Trials": generated questions answered by a fictional
+council of six advisors that stands in for real models. They write only below the directory you
+run them from (`data/phase1_synthetic/` and `artifacts/phase2_synthetic/`), and the pipeline is
+deterministic, so a repeat run gives the same verdict. These runs illustrate the method on a
+synthetic pool; they are not evidence about model quality. The figures they print are listed
+under [Develop and test](#develop-and-test).
+
+## The three hypotheses and results
+
+Delphi tests three hypotheses, each written down before any run:
+
+- **H1, cost:** quality within 2 points of the best single model, at ≥30% lower cost.
+- **H2, quality:** quality above every single model. H2 needs the models to fail on different
+  questions, so the oracle gate checks for that before any router is trained.
+- **H3, learnability:** the router captures ≥60% of the oracle gap.
+
+The pipeline has also run against ten real Bedrock models from seven families, on questions from
+the sample's own generator. On the training run's test split, H3 passed and H1 and H2 failed:
+one of the cheapest models, Gemma 3 27B, was already as good as the strongest, so routing had
+little to save. A follow-up test on 520 new questions, separate from H1, H2 and H3 and also
+written down before the run, then passed: the frozen router stayed within 2 points of Claude
+Sonnet 5.5 at about 80% lower cost. Gemma 3 27B on its own did as well as the router at about a
+ninth of the router's cost, so always name the model a saving is measured against.
+
+These are short synthetic questions, not a production workload.
+The verdict on a real domain dataset is pending: that Phase 4 run is out of scope for this sample. The write-ups and
+aggregate results are in `results/`. The raw model answers, and the router trained on them, are
+not published because they are third-party model outputs; the `scripts/run_*_real.py` scripts
+regenerate them in your own AWS account, at your own cost.
 
 ## Cost basis
 
-Read this before you deploy. Every cost Delphi reports can be re-priced: each `DecisionRecord`
+Read this before you deploy. Every cost Delphi reports can be re-priced. Each `DecisionRecord`
 (`src/delphi/agent/telemetry.py`) carries `chosen_model_id`, `input_tokens` and `output_tokens`,
 and `tokens_by_model` in `delphi.eval.cost` (`src/delphi/eval/cost.py`) totals the tokens per
 model, so you can apply your own prices to the same token counts.
 
-Model prices come from pinned snapshots, one per pool file, and each snapshot names the region
-it was pulled for:
+Model prices come from pinned snapshots, one per pool file, and each snapshot names the region it
+was pulled for:
 
 - `config/models_realpool.yaml` prices the router arm; its snapshot region is us-west-2, pulled
   2026-07-15.
@@ -70,86 +104,53 @@ it was pulled for:
   (pulled 2026-07-14). Those synthetic runs illustrate the method and are not evidence about
   model quality.
 
-Nothing in the code compares a snapshot's region with the region an arm is deployed to. The
-region you deploy to is whatever your AWS environment resolves at deploy time, and the stack
-passes it to each arm as `AWS_REGION`. If it is not a snapshot's region, re-price from current
-AWS pricing for your own region before you rely on any cost.
+Nothing in the code compares a snapshot's region with the region an arm runs in.
+The region you deploy to is whatever your AWS environment resolves at deploy time. If it is not
+a snapshot's region, re-price from current AWS pricing for your own region before you rely on
+any cost.
 
 A deployment accrues cost in five places: model inference through Bedrock Converse;
-AgentCore Runtime for each deployed arm; ECR for the container image; CloudWatch and X-Ray for
-logs, metrics and traces; and S3 for the router artifact, whose bucket the stacks provision in
-create mode (a separate stack that retains it) or reference by name in existing mode, where it
-already exists and is never managed. Only model inference is priced
-by a pinned snapshot in this repository; price the other categories from current AWS pricing for
-your region. This section states no amount on purpose.
+AgentCore Runtime for each arm; ECR for the container image; CloudWatch and X-Ray for logs,
+metrics and traces; and S3 for the router artifact. In create mode the stacks provision the S3
+bucket in a separate stack that retains it. In existing mode they reference an existing S3
+bucket by name and never manage it. Only model inference is priced by a pinned snapshot in this
+repository; price the other categories from current AWS pricing for your region. This section
+states no amount on purpose.
 
-These are running costs of the mechanism, not a measure of routing quality: the router is
-synthetic-trained, so the bill tells you what the mechanism costs, not whether routing pays off.
+These are running costs of the mechanism, not a measure of routing quality: the deployed router
+is synthetic-trained, so the bill tells you what the mechanism costs, not whether routing pays
+off.
 
-## Deployment tooling
+## Status and deployment
 
-Targets the **current** AgentCore stack, deliberately not the deprecated paths:
+The AWS CDK app in `infra/` deploys two **arms**, each its own stack, deployed by name. An arm is
+one version of the system that receives the same test traffic:
 
-- **SDK** `bedrock-agentcore` (`BedrockAgentCoreApp`/`@app.entrypoint`) — *not* `bedrock-agentcore-starter-toolkit`.
-- **IaC** AWS CDK L1 `aws_bedrockagentcore.CfnRuntime` (`AWS::BedrockAgentCore::Runtime`), aws-cdk-lib ≥ 2.261.0.
-- **CLI** `@aws/agentcore` (npm) for scaffold/dev/deploy iteration; drives CDK under the hood.
-- **Data plane** `bedrock-agentcore` `invoke_agent_runtime` — *not* classic Bedrock Agents `InvokeAgent`.
+- `Delphi-router`, the router arm, routes across Nova Lite, Nova Pro and Llama 3.3 70B.
+- `Delphi-pinned-nova-lite`, the pinned baseline arm, always calls Nova Lite.
+
+Both arms run the same container image; only the `DELPHI_ARM` setting differs, so any measured
+difference between them comes from routing. The router arm runs an artifact trained on the
+synthetic pool, not the routers measured on real models, so a deployed arm demonstrates the
+mechanism (route, then Bedrock Converse, then a decision record) and is not a result about
+routing quality.
+
+[`docs/deployment.md`](docs/deployment.md) is the step-by-step guide: bootstrap, create the
+artifact bucket, publish the router artifact, `cdk deploy` each arm by name, verify, and tear
+down. Use a dedicated account, and follow its teardown steps when you finish.
+
+Delphi uses the current AgentCore tooling:
+
+- **SDK:** `bedrock-agentcore` (`BedrockAgentCoreApp`, `@app.entrypoint`).
+- **Infrastructure:** the AWS CDK L1 construct `aws_bedrockagentcore.CfnRuntime`
+  (`AWS::BedrockAgentCore::Runtime`), aws-cdk-lib 2.261.0 or later.
+- **Calls:** `invoke_agent_runtime` in the `bedrock-agentcore` data plane.
 
 The serving image is pinned: its base image by digest in the `Dockerfile`, and its four direct
 Python dependencies to exact releases in `requirements-agent.txt`. Their own transitive
 dependencies are not locked, so two builds months apart can still resolve different versions of
 those. To take upstream fixes, bump the pins deliberately and re-run `pip-audit`. The image runs
 as a non-root user.
-
-See [`docs/deployment.md`](docs/deployment.md).
-
-## Develop
-
-```bash
-python3 -m venv .venv && .venv/bin/pip install -e '.[dev]'
-.venv/bin/python -m pytest                       # xfails are the later-phase deferral register
-PATH="$PWD/.venv/bin:$PATH" bash scripts/ci.sh   # the whole gate: ruff, then suite + floor
-.venv/bin/python scripts/estimate_phase1_budget.py
-
-# Phase 1 offline dry-run over the synthetic "Delphi Trials" — no AWS needed:
-.venv/bin/python scripts/run_phase1_synthetic.py                # gate PASSES (gap 27.55)
-.venv/bin/python scripts/run_phase1_synthetic.py --mode nested  # gate also PASSES (gap 3.53)
-.venv/bin/python scripts/run_phase1_synthetic.py --mode nested --n 40 --seed 8  # gate FAILS (gap 0.00)
-
-# Phase 2: train router families, select on validation, prove artifact round-trip:
-.venv/bin/python scripts/run_phase2_synthetic.py                # H3 capture 0.779 on test
-```
-
-Each figure in these comments is what the command prints at its defaults, and a test
-(`tests/test_evidence_figures.py`) runs the commands and fails if a figure here stops matching.
-Nested mode is unstable across `--n` and `--seed`: at the defaults it still passes the gate, and
-the third command is the failing case the design's kill/pivot gate exists for.
-
-The synthetic run exercises the entire Phase 1 pipeline end to end (generate → split →
-contamination check → response matrix with real ground-truth scoring → oracle gate →
-artifacts) against a fictional council of six advisors. When the real dataset + Bedrock
-creds arrive, only the answer source changes (`SyntheticCouncil` → Converse). See
-[`docs/phase1_pipeline.md`](docs/phase1_pipeline.md).
-
-These synthetic runs illustrate the method on a fictional pool; they are not evidence about
-model quality.
-
-## Run the method offline
-
-You can run the whole method on your own machine before you spend anything: it needs no AWS
-account, no credentials and no network. Two scripts replay Phase 1 and Phase 2 over the
-synthetic "Delphi Trials", a fictional council of six advisors:
-
-```bash
-.venv/bin/python scripts/run_phase1_synthetic.py   # generate, split, score, oracle gate
-.venv/bin/python scripts/run_phase2_synthetic.py   # train, select, artifact round-trip
-```
-
-Each writes only below the directory you run it from (`data/phase1_synthetic/` and
-`artifacts/phase2_synthetic/`). The pipeline is deterministic by hashing, so a repeat run gives
-the same verdict. These runs illustrate the method on a synthetic pool; they are not evidence
-about model quality. The figures they print, and the command that makes the nested pool fail
-the gate, are under [Develop](#develop).
 
 ## Verify a deployment
 
@@ -168,20 +169,54 @@ AWS credential chain. Inbound auth is IAM SigV4, so those credentials need
 `--json` to print the decision record alone. Each run is one real, billed invocation (see
 [Cost basis](#cost-basis)).
 
-A passing check proves the mechanism (route, then Bedrock Converse, then a decision record),
-not routing quality: the deployed router is synthetic-trained.
+A passing check shows the mechanism works (route, then Bedrock Converse, then a decision record).
+It is not a measure of routing quality, because the deployed router is synthetic-trained.
 
-## The three hypotheses (design §1.1)
+## Develop and test
 
-- **H1 — cost dominance:** quality non-inferior (δ=2pt) to best single model at ≥30% lower cost.
-- **H2 — quality dominance:** quality superior to *every* single model (needs non-nested error sets).
-- **H3 — learnability:** router captures ≥60% of the oracle gap.
+```bash
+PATH="$PWD/.venv/bin:$PATH" bash scripts/ci.sh   # the full gate: ruff, then the test suite and coverage floor
+.venv/bin/python -m pytest                       # the test suite alone
+.venv/bin/python scripts/estimate_phase1_budget.py   # token-budget model for a real-data run
 
-**H2 is gated by the oracle analysis (T-STAT-1) before any router is trained** — if the pool's error sets are nested, H2 is unreachable and no ML fixes it. That gate runs in Phase 1.
+# The offline method, with the figure each command prints:
+.venv/bin/python scripts/run_phase1_synthetic.py                # gate PASSES (gap 27.55)
+.venv/bin/python scripts/run_phase1_synthetic.py --mode nested  # gate also PASSES (gap 3.53)
+.venv/bin/python scripts/run_phase1_synthetic.py --mode nested --n 40 --seed 8  # gate FAILS (gap 0.00)
+.venv/bin/python scripts/run_phase2_synthetic.py                # H3 capture 0.779 on test
+```
 
-The H1/H2/H3 verdict is pending: it is gated on a Phase 4 run over a real domain dataset, which
-is out of scope for this release, so the thresholds above are pre-registered design targets,
-not results.
+`tests/test_evidence_figures.py` runs these commands and fails if a figure here stops matching.
+The third command is the case the oracle gate exists for: when the advisors fail on the same
+questions, the gate stops the run before any router is trained. Nested mode is unstable across
+`--n` and `--seed`, which is why it still passes at the defaults. These synthetic runs illustrate
+the method; they are not evidence about model quality. More detail is in
+[`docs/phase1_pipeline.md`](docs/phase1_pipeline.md) and
+[`docs/phase2_training.md`](docs/phase2_training.md).
+
+Tests marked `xfail` are wired for later phases that need a real domain dataset.
+
+## Repository layout
+
+```
+src/delphi/
+  agent/           the router agent: app.py, entrypoint.py (BedrockAgentCoreApp), bedrock.py
+                   (Converse), runtime_client.py, telemetry.py (decision records)
+  router/          router contract, baselines and the oracle, learned-router wrapper, features
+  data/            question schema, the synthetic "Delphi Trials" generator, splits
+  eval/            response matrix, statistical tests, cost, scoring, the oracle gate
+  train/           router families (linear, prototype, knn), training and selection, artifacts
+  verify/          the command-line client that checks a runtime end to end
+  config.py        candidate pools and pricing
+config/            candidate pools with pinned price snapshots, workload
+infra/             AWS CDK app: one stack per arm, plus the artifact bucket stack
+scripts/           offline pipeline runs (synthetic and real-model) and the budget estimate
+results/           write-ups and aggregate results of the real-model runs
+evidence/nfr1/     a routing-overhead latency sample measured on the router arm
+docs/              design, deployment guide, pipeline and training notes, diagrams
+tests/             the test suite
+Dockerfile         ARM64 container image (AgentCore Runtime requires arm64)
+```
 
 ## What runs where
 
@@ -189,12 +224,12 @@ not results.
   `src/delphi/config.py`, `src/delphi/failure_log.py`, and parts of `src/delphi/eval` and
   `src/delphi/train` (partial: only the modules the request path imports, as the package
   docstring lists). A test compares this list with the code.
-- **On the reader's machine:** the verification client (`src/delphi/verify`), which invokes
-  an AgentCore runtime; the container never imports it.
-- **Offline (SageMaker/EC2):** dataset generation, response-matrix builds, scoring and router
-  training (`src/delphi/data` and the rest of `src/delphi/eval` and `src/delphi/train`, driven by
-  `scripts/`, Phase 1/2).
-- **Analytics:** invocation telemetry → CloudWatch → S3/Athena (Phase 3+).
+- **On your machine:** the verification client (`src/delphi/verify`), which invokes an AgentCore
+  runtime; the container never imports it.
+- **Offline (your machine, SageMaker or EC2):** dataset generation, response-matrix builds,
+  scoring and router training (`src/delphi/data` and the rest of `src/delphi/eval` and
+  `src/delphi/train`, driven by `scripts/`).
+- **Analytics:** decision records go to CloudWatch, then S3 and Athena for the hypothesis tests.
 
 ## Executing generated code
 
@@ -206,8 +241,8 @@ variable. When enabled, the code runs in a child process (`src/delphi/eval/runne
 per-cell timeout. **That child process is not a sandbox.** Restricted builtins can be escaped,
 and the child runs with your user's file system and network access. Do not enable it on
 untrusted model output outside a disposable, isolated environment, such as a microVM or a
-seccomp-confined container with no credentials and no network. The offline synthetic demos do not
-need it.
+seccomp-confined container with no credentials and no network. The offline demos and the
+real-model runs do not need it.
 
 ## Security
 
