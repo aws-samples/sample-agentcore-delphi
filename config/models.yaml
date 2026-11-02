@@ -1,0 +1,101 @@
+# Delphi candidate pool + pricing snapshot
+# Prices are USD per 1K tokens, on-demand, us-east-1.
+# SOURCE: AWS Price List API (AmazonBedrock), publicationDate 2026-07-07, pulled 2026-07-14.
+# This file is the single source of truth for T-INF-2 (cost ground truth) and the
+# Phase 1 budget model. Re-pull and re-hash at Phase 0 exit; cost conclusions are
+# pinned to this snapshot (Threat #4, price non-stationarity).
+
+pricing_snapshot:
+  source: aws-price-list-api
+  service_code: AmazonBedrock
+  region: us-east-1
+  publication_date: "2026-07-07"
+  pulled_date: "2026-07-14"
+  pricing_model: on-demand-standard   # not flex/priority/batch
+
+# The routing candidate pool. `id` is the Bedrock modelId used in Converse.
+# `alias` is the short name used in code/telemetry/config.
+# Prices VERIFIED against the Price List API are marked verified: true.
+# Claude 4.x models are NOT in the queried catalog response — their prices are
+# marked verified: false and MUST be confirmed at Phase 0 before the budget is trusted.
+candidates:
+  # us-west-2 requires the cross-region inference profile (us.) for on-demand Converse
+  # on these models; the bare model id returns a validation error.
+  - alias: nova-lite
+    id: us.amazon.nova-lite-v1:0
+    family: nova
+    price_per_1k:
+      input: 0.00006
+      output: 0.00024
+    verified: true
+
+  - alias: nova-pro
+    id: amazon.nova-pro-v1:0
+    family: nova
+    price_per_1k:
+      input: 0.0008
+      output: 0.0032
+    verified: true
+
+  - alias: llama-3-3-70b
+    id: meta.llama3-3-70b-instruct-v1:0
+    family: llama
+    price_per_1k:
+      input: 0.00072
+      output: 0.00072
+    verified: true
+
+  - alias: mistral-large
+    id: mistral.mistral-large-2407-v1:0
+    family: mistral
+    price_per_1k:
+      input: 0.004
+      output: 0.012
+    verified: true
+
+  - alias: deepseek-v3-1
+    id: deepseek.v3-1-v1:0
+    family: deepseek
+    price_per_1k:
+      input: 0.00058
+      output: 0.00168
+    verified: true
+
+  # --- Anthropic family: prices below are PLACEHOLDERS pending Phase 0 confirmation ---
+  # The Price List API `model` enum returned only Claude 2.x / 3 Haiku / 3 Sonnet,
+  # not Haiku 4.5 / Sonnet 4.6. Do not treat these numbers as authoritative.
+  - alias: claude-haiku-4-5
+    id: anthropic.claude-haiku-4-5-v1:0
+    family: anthropic
+    price_per_1k:
+      input: 0.0008
+      output: 0.004
+    verified: false
+    note: "CONFIRM at Phase 0 — not returned by Price List API query on 2026-07-14"
+
+  - alias: claude-sonnet-4-6
+    id: anthropic.claude-sonnet-4-6-v1:0
+    family: anthropic
+    price_per_1k:
+      input: 0.003
+      output: 0.015
+    verified: false
+    note: "CONFIRM at Phase 0 — not returned by Price List API query on 2026-07-14"
+
+# Judge model for T-STAT-5. MUST be outside the candidate pool families above.
+# Anthropic is in the pool, so the judge cannot be Claude. Nova/Llama/Mistral/DeepSeek
+# are also in the pool. A clean external judge is an OpenAI/xAI model available on
+# Bedrock (catalog shows openai.gpt-5.4 and xai.grok-4.3).
+judge:
+  alias: gpt-5-4
+  id: openai.gpt-5.4
+  rationale: >
+    Outside every routed family (T-STAT-5). Must also correlate with ground-truth
+    on benchmarks that have it — validate that correlation at Phase 0 before trusting
+    judge scores on open-ended tasks.
+
+# Latency budget (D2, T-RTR-4). Total routing overhead, not end-to-end.
+latency_budget_ms:
+  routing_overhead_p90: 150
+  cold_start_total: 10000
+  artifact_load: 3000

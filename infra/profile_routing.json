@@ -1,0 +1,35 @@
+{
+  "description": "Destination regions per cross-region inference profile an arm's pool uses (ENT-606, BR3.2, TS-U6-4). Read by infra/delphi_infra/grants.py to grant each arm foundation-model invoke in every region its profiles route to. Outside the image build context, so editing it never moves the image. destination_regions are those documented for source_region; a deploy from another source region confirms or corrects them with PROFILE-ROUTING-CONFIRM first (docs/deployment.md, S6). read_date is the date of the operator's read-only PROFILE-ROUTING-CONFIRM and is null until that read is relayed; source is what the regions were taken from until then.",
+  "profiles": {
+    "us.amazon.nova-lite-v1:0": {
+      "underlying_model_id": "amazon.nova-lite-v1:0",
+      "source_region": "us-west-2",
+      "destination_regions": ["us-east-1", "us-east-2", "us-west-2"],
+      "provenance": {
+        "source": "AWS documentation, Amazon Bedrock User Guide, model card Nova Lite, Geo: US table (read 2026-10-20, documentation only, no account call); confirmed 2026-10-20 by a read-only GetInferenceProfile from us-west-2: regions, model, ACTIVE and SYSTEM_DEFINED all match (evidence/deploy/S7)",
+        "read_date": "2026-10-20",
+        "read_by": "operator"
+      }
+    },
+    "us.amazon.nova-pro-v1:0": {
+      "underlying_model_id": "amazon.nova-pro-v1:0",
+      "source_region": "us-west-2",
+      "destination_regions": ["us-east-1", "us-east-2", "us-west-2"],
+      "provenance": {
+        "source": "AWS documentation, Amazon Bedrock User Guide, model card Nova Pro, Geo: US table (read 2026-10-20, documentation only, no account call); confirmed 2026-10-20 by a read-only GetInferenceProfile from us-west-2: regions, model, ACTIVE and SYSTEM_DEFINED all match (evidence/deploy/S7)",
+        "read_date": "2026-10-20",
+        "read_by": "operator"
+      }
+    },
+    "us.meta.llama3-3-70b-instruct-v1:0": {
+      "underlying_model_id": "meta.llama3-3-70b-instruct-v1:0",
+      "source_region": "us-west-2",
+      "destination_regions": ["us-east-1", "us-east-2", "us-west-2"],
+      "provenance": {
+        "source": "AWS documentation, Amazon Bedrock User Guide, model card Llama 3.3 70B Instruct, Geo: US table (read 2026-10-20, documentation only, no account call); confirmed 2026-10-20 by a read-only GetInferenceProfile from us-west-2: regions, model, ACTIVE and SYSTEM_DEFINED all match (evidence/deploy/S7)",
+        "read_date": "2026-10-20",
+        "read_by": "operator"
+      }
+    }
+  }
+}

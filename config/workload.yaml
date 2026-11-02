@@ -1,0 +1,45 @@
+# Delphi evaluation workload definition (Phase 0 deliverable)
+# Frozen dataset manifest. Hashes filled at Phase 0 exit (T-INF-4 replayability).
+
+# Benchmark mix — subset of LLMRouter's 11 supported benchmarks, chosen to span
+# task types with non-nested error surfaces (precondition for H2 complementarity).
+benchmarks:
+  - name: gsm8k
+    task_type: math
+    scoring: exact_match        # ground truth exists -> native metric (T-STAT-5a)
+    split_seed: 20260714
+  - name: mmlu
+    task_type: knowledge_mc
+    scoring: exact_match
+    split_seed: 20260714
+  - name: mbpp
+    task_type: code
+    scoring: pass_at_1          # execute unit tests
+    split_seed: 20260714
+  - name: natural_questions
+    task_type: open_qa
+    scoring: f1
+    split_seed: 20260714
+  - name: arc_challenge
+    task_type: reasoning_mc
+    scoring: exact_match
+    split_seed: 20260714
+
+# Domain-representative set — the real external-validity defence (Threat #1).
+# Placeholder until a real traffic distribution is supplied.
+domain_set:
+  name: delphi_domain_v0
+  task_type: mixed
+  scoring: llm_judge            # no ground truth -> judge (T-STAT-5b), dual-scored
+  source: TBD_traffic_sample
+  min_queries: 1000             # enough for MF router signal per model (D2 note)
+
+# Splits. Contamination guard is T-STAT-6 (MinHash near-dup across train/eval).
+splits:
+  train: 0.60
+  validation: 0.20             # router-family selection happens here, never on test
+  test: 0.20
+
+# Sizing target — see docs/phase1_budget.md power analysis.
+# N per benchmark set so paired bootstrap (T-STAT-2) can detect a 2-pt diff at 80% power.
+target_queries_per_benchmark: 1000

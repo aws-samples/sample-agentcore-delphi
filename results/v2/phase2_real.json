@@ -1,0 +1,126 @@
+{
+  "strict": {
+    "winner": "knn",
+    "artifact_hash": "bc5dce0a0c25ade4b386f40f6469792f",
+    "families": [
+      {
+        "family": "linear",
+        "val_capture": 0.7322010764741661,
+        "val_quality": 63.44796133188873,
+        "p90_ms": 0.04349579103291035
+      },
+      {
+        "family": "prototype",
+        "val_capture": 0.35940407914330696,
+        "val_quality": 58.89195346490047,
+        "p90_ms": 0.0773751875385642
+      },
+      {
+        "family": "knn",
+        "val_capture": 0.7402258250322179,
+        "val_quality": 63.54603298435067,
+        "p90_ms": 0.1387998927384615
+      }
+    ],
+    "test": {
+      "router_quality": 63.3106218297725,
+      "router_cost": 6.987602605863193e-05,
+      "single_quality": {
+        "nova-lite": 50.97975803704697,
+        "nova-pro": 46.192157585189726,
+        "llama-3-3-70b": 58.302102734425254
+      },
+      "single_cost": {
+        "nova-lite": 2.290514657980456e-05,
+        "nova-pro": 0.00030049250814332247,
+        "llama-3-3-70b": 8.644221498371335e-05
+      },
+      "best_single": "llama-3-3-70b",
+      "oracle_quality": 66.24176566362829,
+      "oracle_cost": 4.9093355048859934e-05,
+      "random_quality": 52.0400363992479,
+      "capture": 0.7936065545758966,
+      "gap": 7.939662929203031,
+      "mix": {
+        "llama-3-3-70b": 86,
+        "nova-lite": 178,
+        "nova-pro": 43
+      },
+      "mix_by_domain": {
+        "reckoning/llama-3-3-70b": 61,
+        "facts/nova-lite": 57,
+        "prophecy/nova-lite": 52,
+        "facts/nova-pro": 20,
+        "prophecy/nova-pro": 19,
+        "lore/llama-3-3-70b": 25,
+        "lore/nova-pro": 4,
+        "reckoning/nova-lite": 19,
+        "lore/nova-lite": 50
+      }
+    }
+  },
+  "lenient": {
+    "winner": "linear",
+    "artifact_hash": "4525ce6b599e12c140afdcb643b29619",
+    "families": [
+      {
+        "family": "linear",
+        "val_capture": 0.572192513368983,
+        "val_quality": 93.7128712871287,
+        "p90_ms": 0.04572505131363869
+      },
+      {
+        "family": "prototype",
+        "val_capture": 0.572192513368983,
+        "val_quality": 93.7128712871287,
+        "p90_ms": 0.0758253037929535
+      },
+      {
+        "family": "knn",
+        "val_capture": 0.572192513368983,
+        "val_quality": 93.7128712871287,
+        "p90_ms": 0.4706749925389889
+      }
+    ],
+    "test": {
+      "router_quality": 95.11400651465799,
+      "router_cost": 0.00010541120521172638,
+      "single_quality": {
+        "nova-lite": 94.1042345276873,
+        "nova-pro": 91.66123778501628,
+        "llama-3-3-70b": 91.49837133550488
+      },
+      "single_cost": {
+        "nova-lite": 2.290514657980456e-05,
+        "nova-pro": 0.00030049250814332247,
+        "llama-3-3-70b": 8.644221498371335e-05
+      },
+      "best_single": "nova-lite",
+      "oracle_quality": 96.54723127035831,
+      "oracle_cost": 4.134273615635179e-05,
+      "random_quality": 92.52768729641694,
+      "capture": 0.6434359805510541,
+      "gap": 2.4429967426710135,
+      "mix": {
+        "nova-lite": 168,
+        "nova-pro": 80,
+        "llama-3-3-70b": 59
+      },
+      "mix_by_domain": {
+        "reckoning/nova-lite": 37,
+        "facts/nova-pro": 23,
+        "facts/nova-lite": 27,
+        "prophecy/nova-lite": 60,
+        "reckoning/nova-pro": 27,
+        "prophecy/nova-pro": 8,
+        "lore/nova-pro": 22,
+        "facts/llama-3-3-70b": 27,
+        "reckoning/llama-3-3-70b": 16,
+        "lore/nova-lite": 44,
+        "lore/llama-3-3-70b": 13,
+        "prophecy/llama-3-3-70b": 3
+      }
+    }
+  },
+  "run_spend_usd": 2.94682298
+}

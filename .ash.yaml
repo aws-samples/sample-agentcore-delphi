@@ -1,0 +1,30 @@
+# Automated Security Helper (ASH, github.com/awslabs/automated-security-helper) project config.
+# Every other setting is ASH's default. Each suppression below is a reviewed false positive.
+global_settings:
+  suppressions:
+    - rule_id: SECRET-BASE64-HIGH-ENTROPY-STRING
+      path: infra/baseline/templates/u6c-predicted/*.template.json
+      reason: >-
+        aws-cdk-lib's fixed LogRetention singleton construct id
+        (LogRetentionaae0aa3c5b4d4f87b02d85b201efdd8a) in the synthesized template's logical
+        ids, construct paths and references. A CDK identifier, not a credential.
+      expiration: "2027-10-28"
+    - rule_id: SECRET-HEX-HIGH-ENTROPY-STRING
+      path: evidence/nfr1/*
+      reason: >-
+        SHA-256 digests of the five public demo prompts (prompt_digests, prompt_sha256), random
+        AgentCore request ids and the router artifact's content hash in the committed latency
+        sample. Hashes and identifiers, not credentials.
+      expiration: "2027-10-28"
+    - rule_id: SECRET-HEX-HIGH-ENTROPY-STRING
+      path: results/**
+      reason: >-
+        Content hashes in the real-run results: dataset_hash, hash and artifact_hash fields
+        (SHA-256 / MD5 digests of the question set and router artifacts). Not credentials.
+      expiration: "2027-10-28"
+    - rule_id: SECRET-HEX-HIGH-ENTROPY-STRING
+      path: scripts/run_confirm_v4_real.py
+      reason: >-
+        SHA-256 pins of the frozen v4 router artifact's files (scalars.json, manifest.json,
+        weights.npz), checked before the confirmation run. Not credentials.
+      expiration: "2027-10-28"

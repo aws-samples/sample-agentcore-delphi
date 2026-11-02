@@ -1,0 +1,87 @@
+[build-system]
+requires = ["setuptools>=68"]
+build-backend = "setuptools.build_meta"
+
+[project]
+name = "delphi"
+version = "0.1.0"
+description = "A learned cross-model query router on Amazon Bedrock AgentCore"
+requires-python = ">=3.11"
+dependencies = [
+    "numpy>=1.26",
+    "pyyaml>=6.0",
+]
+
+[project.optional-dependencies]
+# Offline data generation + router training (Phase 1/2). Runs on SageMaker/EC2, not AgentCore.
+# The built-in router families (linear / prototype / knn) are pure numpy — no heavy deps.
+# scikit-learn/torch are optional, only if additional families are added later.
+train = [
+    "scikit-learn>=1.4",  # optional: for extra router families beyond the numpy built-ins
+]
+dev = [
+    "pytest>=8.0",
+    "pytest-cov>=5.0",
+    # boto3 here, not in [project] dependencies: it lets the verification command and
+    # runtime_client be imported under test (AC1.5.4). FR10.1 deletes the [agent] extra,
+    # which is where boto3 used to resolve from locally.
+    "boto3>=1.34",
+    # The CDK app's SDK, so the stack is synthesized under test (T-PKG-U3-14..16). These
+    # specifiers must equal infra/requirements.txt (T-PKG-U3-17).
+    "aws-cdk-lib>=2.261.0",
+    "constructs>=10.0.0",
+    # The CDK app's rule pack (U6 TS-U6-1), so the suite synthesizes with it. Must equal
+    # infra/requirements.txt (T-INF-U6-56); bounded to one 2.x minor, as ruff below is.
+    "cdk-nag>=2.38,<2.39",
+    # The linter scripts/ci.sh runs. Bounded to one minor version so a new upstream rule
+    # cannot turn an unchanged tree red (NR-U5-9); raising the bound is a deliberate edit.
+    "ruff>=0.15,<0.16",
+]
+
+[project.scripts]
+# A stable entry point a reader can type, and an importable module so AC1.5.4 can be
+# asserted. Replaces `python scripts/drive_router.py`, which is deleted (ADR-002).
+delphi-verify = "delphi.verify.cli:_entry"
+# The one producer and publisher of router artifacts. Replaces
+# `python scripts/build_realpool_artifact.py`, which is deleted (plan D-CG-2).
+delphi-artifact = "delphi.train.publish:_entry"
+# The local identifier check for what would be published (U5 FR9.1). Never run in CI.
+delphi-scrub-check = "delphi.tools.scrub_check:_entry"
+# The on-architecture NFR1 sample capture (U6 TS-U6-5). One session, bounded, run by a person
+# after the SPEND-CONFIRM receipt; never run in CI.
+delphi-nfr1-capture = "delphi.eval.capture:_entry"
+
+[tool.setuptools.packages.find]
+where = ["src"]
+
+[tool.pytest.ini_options]
+pythonpath = ["src"]
+testpaths = ["tests"]
+# The `image` test builds the serving image and needs a running Docker daemon, so the
+# default run deselects it. `pytest -m image` on the command line overrides this (the last
+# -m wins). Never run this unit's files with `-o addopts=""`: that runs the Docker test.
+addopts = "-q -m 'not image'"
+markers = [
+    "image: builds the serving image; needs a running Docker daemon (T-PKG-U3-4)",
+    "author_record(*paths): checks the author's working record; skipped when a path is absent",
+]
+# An xfail that starts passing fails the run, so a deferral whose gate has opened is seen
+# (NFR4.1). A marker that passes strict=False explicitly would override this.
+xfail_strict = true
+
+# The coverage floor is configuration, read by `pytest --cov` in scripts/ci.sh (NFR3.1).
+# `--cov` stays out of addopts so a one-file local run is not failed by the floor.
+[tool.coverage.run]
+source = ["src"]
+
+[tool.coverage.report]
+fail_under = 80
+
+# Lint only; `ruff format` is not adopted. Every suppression is `# noqa: CODE - <why>`.
+[tool.ruff]
+line-length = 100
+extend-exclude = ["infra/cdk.out", ".venv", "infra/.venv"]
+
+[tool.ruff.lint]
+select = ["E", "BLE", "S"]
+per-file-ignores = {"tests/**" = ["S101"]}

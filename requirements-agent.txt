@@ -1,0 +1,7 @@
+# The ONLY declaration of the serving image's third-party set: the Dockerfile installs this
+# file, then installs the delphi package with --no-deps. Pinned to exact releases (read
+# 2026-10-28) so an image rebuild is reproducible; bump them deliberately, then run pip-audit.
+bedrock-agentcore==1.25.1
+boto3==1.43.120
+numpy==2.5.4
+pyyaml==6.0.3

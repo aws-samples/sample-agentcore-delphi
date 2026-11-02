@@ -1,0 +1,41 @@
+# Real, invokable 3-model pool for LIVE router-arm validation on AgentCore (us-west-2).
+# All three are confirmed available via us. cross-region inference profiles for on-demand
+# Converse. Prices are the verified July-2026 snapshot values.
+# NOTE: this pool exists to validate the routing MECHANISM end-to-end on real Bedrock.
+# Routing quality is synthetic-derived (labels come from the Delphi-Trials council remap),
+# so it is NOT a quality claim — it proves load + route-across-models + real answers.
+
+pricing_snapshot:
+  source: aws-price-list-api
+  service_code: AmazonBedrock
+  region: us-west-2
+  publication_date: "2026-07-07"
+  pulled_date: "2026-07-15"
+  pricing_model: on-demand-standard
+
+candidates:
+  - alias: nova-lite
+    id: us.amazon.nova-lite-v1:0
+    family: nova
+    price_per_1k: {input: 0.00006, output: 0.00024}
+    verified: true
+  - alias: nova-pro
+    id: us.amazon.nova-pro-v1:0
+    family: nova
+    price_per_1k: {input: 0.0008, output: 0.0032}
+    verified: true
+  - alias: llama-3-3-70b
+    id: us.meta.llama3-3-70b-instruct-v1:0
+    family: llama
+    price_per_1k: {input: 0.00072, output: 0.00072}
+    verified: true
+
+judge:
+  alias: gpt-5-4
+  id: openai.gpt-5.4
+  rationale: "Outside the routed families (nova/llama)."
+
+latency_budget_ms:
+  routing_overhead_p90: 150
+  cold_start_total: 10000
+  artifact_load: 3000

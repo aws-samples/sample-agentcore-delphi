@@ -1,0 +1,402 @@
+{
+  "trials": "v3",
+  "prior_spend_usd": 1.18427274,
+  "domains": [
+    "prophecy",
+    "facts",
+    "reckoning",
+    "lore"
+  ],
+  "dataset": {
+    "name": "delphi-trials-v2-250x4-seed20261028",
+    "n": 1000,
+    "hash": "0a2aa26ce68be2ff3fd37a3741eb48b4c8b4bac4536f53c4cc7408f25c8e93d3"
+  },
+  "split_manifest": {
+    "train": {
+      "n": 491,
+      "hash": "ae813523aac55e6c98e08574d65b5efa6e41a4765dcf3017f921d728aba74c9f"
+    },
+    "validation": {
+      "n": 202,
+      "hash": "e8c52dfb819e14320791eb02d1c5733bf760c2758fd76f95cd830cac220eab1d"
+    },
+    "test": {
+      "n": 307,
+      "hash": "2837ecb7dc9525c76320a9503bf175c03bb5f9a71f1e760f4935c29413279767"
+    }
+  },
+  "pool": [
+    "us.amazon.nova-lite-v1:0",
+    "us.amazon.nova-pro-v1:0",
+    "us.meta.llama3-3-70b-instruct-v1:0",
+    "google.gemma-3-4b-it",
+    "us.amazon.nova-micro-v1:0",
+    "mistral.ministral-3-3b-instruct",
+    "qwen.qwen3-32b-v1:0",
+    "google.gemma-3-27b-it",
+    "deepseek.v3.2",
+    "us.anthropic.claude-sonnet-5-5"
+  ],
+  "judge": "us.openai.gpt-5.4",
+  "scoring": {
+    "strict": {
+      "gate_test": {
+        "gap": 15.367137503583336,
+        "passes": true,
+        "oracle_mean": 74.22520323933125,
+        "best_single": "gemma-3-27b",
+        "best_single_mean": 58.858065735747914,
+        "random_mean": 51.908199680365875,
+        "per_model_mean": {
+          "nova-lite": 50.97975803704697,
+          "nova-pro": 46.192157585189726,
+          "llama-3-3-70b": 58.302102734425254,
+          "gemma-3-4b": 51.17722798838581,
+          "nova-micro": 49.43254345698848,
+          "ministral-3b": 44.4525518397564,
+          "qwen3-32b": 56.41864416608047,
+          "gemma-3-27b": 58.858065735747914,
+          "deepseek-v3-2": 49.763428188140864,
+          "claude-sonnet-5-5": 50.96905068446101
+        }
+      },
+      "gate_full": {
+        "gap": 14.411706503796403,
+        "passes": true,
+        "oracle_mean": 74.58994673273328,
+        "best_single": "gemma-3-27b",
+        "best_single_mean": 60.17824022893688,
+        "random_mean": 52.44130753036967,
+        "per_model_mean": {
+          "nova-lite": 51.99759366036444,
+          "nova-pro": 47.01095617637543,
+          "llama-3-3-70b": 58.887734221001985,
+          "gemma-3-4b": 51.13645046875415,
+          "nova-micro": 50.060386711905736,
+          "ministral-3b": 45.27617700852232,
+          "qwen3-32b": 56.60537582835273,
+          "gemma-3-27b": 60.17824022893688,
+          "deepseek-v3-2": 51.603746621000674,
+          "claude-sonnet-5-5": 54.09079981496227
+        }
+      },
+      "by_domain_test": {
+        "prophecy": {
+          "nova-lite": 80.14084507042253,
+          "nova-pro": 72.3943661971831,
+          "llama-3-3-70b": 75.91549295774648,
+          "gemma-3-4b": 84.08450704225352,
+          "nova-micro": 73.66197183098592,
+          "ministral-3b": 84.22535211267606,
+          "qwen3-32b": 88.30985915492958,
+          "gemma-3-27b": 91.54929577464789,
+          "deepseek-v3-2": 95.21126760563381,
+          "claude-sonnet-5-5": 90.14084507042253,
+          "ORACLE": 98.73239436619718
+        },
+        "facts": {
+          "nova-lite": 100.0,
+          "nova-pro": 100.0,
+          "llama-3-3-70b": 98.7012987012987,
+          "gemma-3-4b": 90.9090909090909,
+          "nova-micro": 96.1038961038961,
+          "ministral-3b": 90.9090909090909,
+          "qwen3-32b": 100.0,
+          "gemma-3-27b": 100.0,
+          "deepseek-v3-2": 100.0,
+          "claude-sonnet-5-5": 100.0,
+          "ORACLE": 100.0
+        },
+        "reckoning": {
+          "nova-lite": 1.25,
+          "nova-pro": 2.5,
+          "llama-3-3-70b": 46.25,
+          "gemma-3-4b": 16.25,
+          "nova-micro": 0.0,
+          "ministral-3b": 2.5,
+          "qwen3-32b": 28.75,
+          "gemma-3-27b": 38.75,
+          "deepseek-v3-2": 0.0,
+          "claude-sonnet-5-5": 13.75,
+          "ORACLE": 48.75
+        },
+        "lore": {
+          "nova-lite": 27.351717941435652,
+          "nova-pro": 14.442941501939826,
+          "llama-3-3-70b": 15.300576448969052,
+          "gemma-3-4b": 18.24568344853724,
+          "nova-micro": 32.22520052272739,
+          "ministral-3b": 5.910549554496381,
+          "qwen3-32b": 13.29776910109748,
+          "gemma-3-27b": 9.739571909805186,
+          "deepseek-v3-2": 10.34648675644615,
+          "claude-sonnet-5-5": 5.664538735816853,
+          "ORACLE": 52.87515689208477
+        }
+      },
+      "by_domain_full": {
+        "prophecy": {
+          "nova-lite": 81.56,
+          "nova-pro": 70.44,
+          "llama-3-3-70b": 76.56,
+          "gemma-3-4b": 86.0,
+          "nova-micro": 74.8,
+          "ministral-3b": 83.28,
+          "qwen3-32b": 89.6,
+          "gemma-3-27b": 92.52,
+          "deepseek-v3-2": 93.6,
+          "claude-sonnet-5-5": 91.96,
+          "ORACLE": 98.88
+        },
+        "facts": {
+          "nova-lite": 98.4,
+          "nova-pro": 100.0,
+          "llama-3-3-70b": 99.2,
+          "gemma-3-4b": 87.6,
+          "nova-micro": 95.2,
+          "ministral-3b": 88.0,
+          "qwen3-32b": 100.0,
+          "gemma-3-27b": 100.0,
+          "deepseek-v3-2": 100.0,
+          "claude-sonnet-5-5": 100.0,
+          "ORACLE": 100.0
+        },
+        "reckoning": {
+          "nova-lite": 0.8,
+          "nova-pro": 1.6,
+          "llama-3-3-70b": 41.2,
+          "gemma-3-4b": 12.4,
+          "nova-micro": 0.4,
+          "ministral-3b": 1.6,
+          "qwen3-32b": 25.6,
+          "gemma-3-27b": 36.0,
+          "deepseek-v3-2": 0.0,
+          "claude-sonnet-5-5": 17.6,
+          "ORACLE": 49.6
+        },
+        "lore": {
+          "nova-lite": 27.230374641457747,
+          "nova-pro": 16.003824705501728,
+          "llama-3-3-70b": 18.590936884007974,
+          "gemma-3-4b": 18.545801875016586,
+          "nova-micro": 29.841546847622944,
+          "ministral-3b": 8.22470803408928,
+          "qwen3-32b": 11.221503313410935,
+          "gemma-3-27b": 12.192960915747532,
+          "deepseek-v3-2": 12.814986484002693,
+          "claude-sonnet-5-5": 6.803199259849066,
+          "ORACLE": 49.87978693093308
+        }
+      }
+    },
+    "lenient": {
+      "gate_test": {
+        "gap": 2.9315960912052077,
+        "passes": false,
+        "oracle_mean": 99.70684039087948,
+        "best_single": "deepseek-v3-2",
+        "best_single_mean": 96.77524429967427,
+        "random_mean": 93.02931596091206,
+        "per_model_mean": {
+          "nova-lite": 94.1042345276873,
+          "nova-pro": 91.66123778501628,
+          "llama-3-3-70b": 91.49837133550488,
+          "gemma-3-4b": 85.8957654723127,
+          "nova-micro": 90.6514657980456,
+          "ministral-3b": 88.8599348534202,
+          "qwen3-32b": 93.38762214983713,
+          "gemma-3-27b": 96.74267100977198,
+          "deepseek-v3-2": 96.77524429967427,
+          "claude-sonnet-5-5": 95.76547231270358
+        }
+      },
+      "gate_full": {
+        "gap": 3.0900000000000034,
+        "passes": true,
+        "oracle_mean": 99.72,
+        "best_single": "gemma-3-27b",
+        "best_single_mean": 96.63,
+        "random_mean": 92.04133333333334,
+        "per_model_mean": {
+          "nova-lite": 94.24,
+          "nova-pro": 90.46,
+          "llama-3-3-70b": 90.69,
+          "gemma-3-4b": 84.35,
+          "nova-micro": 89.71666666666665,
+          "ministral-3b": 88.12,
+          "qwen3-32b": 94.5,
+          "gemma-3-27b": 96.63,
+          "deepseek-v3-2": 96.35,
+          "claude-sonnet-5-5": 96.19
+        }
+      },
+      "by_domain_test": {
+        "prophecy": {
+          "nova-lite": 80.14084507042253,
+          "nova-pro": 72.3943661971831,
+          "llama-3-3-70b": 75.91549295774648,
+          "gemma-3-4b": 84.08450704225352,
+          "nova-micro": 73.66197183098592,
+          "ministral-3b": 84.22535211267606,
+          "qwen3-32b": 88.30985915492958,
+          "gemma-3-27b": 91.54929577464789,
+          "deepseek-v3-2": 95.21126760563381,
+          "claude-sonnet-5-5": 90.14084507042253,
+          "ORACLE": 98.73239436619718
+        },
+        "facts": {
+          "nova-lite": 100.0,
+          "nova-pro": 100.0,
+          "llama-3-3-70b": 98.7012987012987,
+          "gemma-3-4b": 90.9090909090909,
+          "nova-micro": 100.0,
+          "ministral-3b": 90.9090909090909,
+          "qwen3-32b": 100.0,
+          "gemma-3-27b": 100.0,
+          "deepseek-v3-2": 100.0,
+          "claude-sonnet-5-5": 100.0,
+          "ORACLE": 100.0
+        },
+        "reckoning": {
+          "nova-lite": 100.0,
+          "nova-pro": 93.75,
+          "llama-3-3-70b": 95.0,
+          "gemma-3-4b": 88.75,
+          "nova-micro": 95.0,
+          "ministral-3b": 98.75,
+          "qwen3-32b": 93.75,
+          "gemma-3-27b": 96.25,
+          "deepseek-v3-2": 95.0,
+          "claude-sonnet-5-5": 93.75,
+          "ORACLE": 100.0
+        },
+        "lore": {
+          "nova-lite": 94.9367088607595,
+          "nova-pro": 98.73417721518987,
+          "llama-3-3-70b": 94.9367088607595,
+          "gemma-3-4b": 79.74683544303798,
+          "nova-micro": 92.40506329113924,
+          "ministral-3b": 81.0126582278481,
+          "qwen3-32b": 91.13924050632912,
+          "gemma-3-27b": 98.73417721518987,
+          "deepseek-v3-2": 96.83544303797468,
+          "claude-sonnet-5-5": 98.73417721518987,
+          "ORACLE": 100.0
+        }
+      },
+      "by_domain_full": {
+        "prophecy": {
+          "nova-lite": 81.56,
+          "nova-pro": 70.44,
+          "llama-3-3-70b": 76.56,
+          "gemma-3-4b": 86.0,
+          "nova-micro": 74.8,
+          "ministral-3b": 83.28,
+          "qwen3-32b": 89.6,
+          "gemma-3-27b": 92.52,
+          "deepseek-v3-2": 93.6,
+          "claude-sonnet-5-5": 91.96,
+          "ORACLE": 98.88
+        },
+        "facts": {
+          "nova-lite": 99.6,
+          "nova-pro": 100.0,
+          "llama-3-3-70b": 99.2,
+          "gemma-3-4b": 87.6,
+          "nova-micro": 98.4,
+          "ministral-3b": 88.0,
+          "qwen3-32b": 100.0,
+          "gemma-3-27b": 100.0,
+          "deepseek-v3-2": 100.0,
+          "claude-sonnet-5-5": 100.0,
+          "ORACLE": 100.0
+        },
+        "reckoning": {
+          "nova-lite": 99.6,
+          "nova-pro": 94.8,
+          "llama-3-3-70b": 93.2,
+          "gemma-3-4b": 86.4,
+          "nova-micro": 94.4,
+          "ministral-3b": 97.6,
+          "qwen3-32b": 96.0,
+          "gemma-3-27b": 98.8,
+          "deepseek-v3-2": 95.6,
+          "claude-sonnet-5-5": 95.6,
+          "ORACLE": 100.0
+        },
+        "lore": {
+          "nova-lite": 96.2,
+          "nova-pro": 96.6,
+          "llama-3-3-70b": 93.8,
+          "gemma-3-4b": 77.4,
+          "nova-micro": 91.26666666666667,
+          "ministral-3b": 83.6,
+          "qwen3-32b": 92.4,
+          "gemma-3-27b": 95.2,
+          "deepseek-v3-2": 96.2,
+          "claude-sonnet-5-5": 97.2,
+          "ORACLE": 100.0
+        }
+      }
+    }
+  },
+  "cost": {
+    "per_arm_per_query": {
+      "nova-lite": 2.255082e-05,
+      "nova-pro": 0.00029780400000000004,
+      "llama-3-3-70b": 8.694216e-05,
+      "gemma-3-4b": 1.100368e-05,
+      "nova-micro": 1.2645185e-05,
+      "ministral-3b": 1.16408e-05,
+      "qwen3-32b": 3.464565e-05,
+      "gemma-3-27b": 3.96052e-05,
+      "deepseek-v3-2": 0.00013704012,
+      "claude-sonnet-5-5": 0.0020092621999999996
+    },
+    "tokens_by_model": {
+      "nova-lite": [
+        29631,
+        86554
+      ],
+      "nova-pro": [
+        29631,
+        85656
+      ],
+      "llama-3-3-70b": [
+        65665,
+        55088
+      ],
+      "gemma-3-4b": [
+        39408,
+        117842
+      ],
+      "nova-micro": [
+        29631,
+        82915
+      ],
+      "ministral-3b": [
+        34722,
+        81686
+      ],
+      "qwen3-32b": [
+        43287,
+        46921
+      ],
+      "gemma-3-27b": [
+        39408,
+        80372
+      ],
+      "deepseek-v3-2": [
+        33896,
+        62716
+      ],
+      "claude-sonnet-5-5": [
+        55916,
+        171477
+      ]
+    },
+    "judge_usd": 9.795247,
+    "run_spend_usd": 12.458386814999999
+  }
+}

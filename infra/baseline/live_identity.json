@@ -1,0 +1,28 @@
+{
+  "name": "last-synthesized identity",
+  "note": "Produced offline, with no AWS call, from the named commit below; it is NOT read from the live account. DIFF-MATCH against the deployed stack is the backstop (INF-U6-15). A change to this file must be named in the affected step's expected diff.",
+  "produced_from_commit": "b6cb537",
+  "produced_by": "offline synth of infra/app.py at that commit, infra/.venv aws-cdk-lib 2.261.0",
+  "stacks": {
+    "Delphi-pinned-nova-lite": {
+      "resources": [
+        ["Runtime", "AWS::BedrockAgentCore::Runtime"],
+        ["RuntimeExecPolicy5BBDFEE5", "AWS::IAM::ManagedPolicy"],
+        ["RuntimeExecutionRoleFBC63B09", "AWS::IAM::Role"]
+      ],
+      "runtime_name": "delphi_pinned_nova_lite",
+      "network_mode": "PUBLIC",
+      "authorizer": false
+    },
+    "Delphi-router": {
+      "resources": [
+        ["Runtime", "AWS::BedrockAgentCore::Runtime"],
+        ["RuntimeExecPolicy5BBDFEE5", "AWS::IAM::ManagedPolicy"],
+        ["RuntimeExecutionRoleFBC63B09", "AWS::IAM::Role"]
+      ],
+      "runtime_name": "delphi_router",
+      "network_mode": "PUBLIC",
+      "authorizer": false
+    }
+  }
+}

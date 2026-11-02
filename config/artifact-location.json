@@ -1,0 +1,7 @@
+{
+  "bucket": "delphi-artifacts-{account}-{region}",
+  "pointer_key": "router/current.json",
+  "triple_prefix": "router/{artifact_hash}/",
+  "legacy_prefix": "router/current",
+  "serving_form": "pointer"
+}

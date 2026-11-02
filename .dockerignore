@@ -1,0 +1,22 @@
+# The ONE filter on the image build context (the CDK DockerImageAsset context is the repo
+# root). It is an ALLOWLIST: exclude everything, then re-include only what the Dockerfile
+# COPYs. A new root file (STATUS.md, an AI-DLC record, .coverage) therefore never enters the
+# context, never moves the image asset hash, and never redeploys an arm (T-PKG-U3-14/-15).
+# It also cannot recreate the recursive infra/cdk.out self-copy (ENAMETOOLONG) a denylist
+# miss once caused.
+#
+# ORDER IS LOAD-BEARING: later patterns win. The re-exclusions must come after the `!` lines.
+# Any new serving path must be added here in the same commit as the Dockerfile COPY for it.
+*
+!src/
+!config/
+!pyproject.toml
+!requirements-agent.txt
+!Dockerfile
+# U6 P-U6-8: no request-path module reads the artifact location file (only the publisher
+# does), so it stays out of the image and a serving_form edit cannot move the asset hash.
+config/artifact-location.json
+**/__pycache__
+**/*.pyc
+**/.DS_Store
+**/*.egg-info

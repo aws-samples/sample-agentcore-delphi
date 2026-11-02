@@ -1,0 +1,220 @@
+{
+  "trials": "v2",
+  "prior_spend_usd": 1.18427274,
+  "domains": [
+    "prophecy",
+    "facts",
+    "reckoning",
+    "lore"
+  ],
+  "dataset": {
+    "name": "delphi-trials-v2-250x4-seed20261028",
+    "n": 1000,
+    "hash": "0a2aa26ce68be2ff3fd37a3741eb48b4c8b4bac4536f53c4cc7408f25c8e93d3"
+  },
+  "split_manifest": {
+    "train": {
+      "n": 491,
+      "hash": "ae813523aac55e6c98e08574d65b5efa6e41a4765dcf3017f921d728aba74c9f"
+    },
+    "validation": {
+      "n": 202,
+      "hash": "e8c52dfb819e14320791eb02d1c5733bf760c2758fd76f95cd830cac220eab1d"
+    },
+    "test": {
+      "n": 307,
+      "hash": "2837ecb7dc9525c76320a9503bf175c03bb5f9a71f1e760f4935c29413279767"
+    }
+  },
+  "pool": [
+    "us.amazon.nova-lite-v1:0",
+    "us.amazon.nova-pro-v1:0",
+    "us.meta.llama3-3-70b-instruct-v1:0"
+  ],
+  "judge": "us.openai.gpt-5.4",
+  "scoring": {
+    "strict": {
+      "gate_test": {
+        "gap": 7.939662929203031,
+        "passes": true,
+        "oracle_mean": 66.24176566362829,
+        "best_single": "llama-3-3-70b",
+        "best_single_mean": 58.302102734425254,
+        "random_mean": 52.0400363992479,
+        "per_model_mean": {
+          "nova-lite": 50.97975803704697,
+          "nova-pro": 46.192157585189726,
+          "llama-3-3-70b": 58.302102734425254
+        }
+      },
+      "gate_full": {
+        "gap": 7.2146098486002685,
+        "passes": true,
+        "oracle_mean": 66.10234406960225,
+        "best_single": "llama-3-3-70b",
+        "best_single_mean": 58.887734221001985,
+        "random_mean": 52.68602421318225,
+        "per_model_mean": {
+          "nova-lite": 51.99759366036444,
+          "nova-pro": 47.01095617637543,
+          "llama-3-3-70b": 58.887734221001985
+        }
+      },
+      "by_domain_test": {
+        "prophecy": {
+          "nova-lite": 80.14084507042253,
+          "nova-pro": 72.3943661971831,
+          "llama-3-3-70b": 75.91549295774648,
+          "ORACLE": 85.07042253521126
+        },
+        "facts": {
+          "nova-lite": 100.0,
+          "nova-pro": 100.0,
+          "llama-3-3-70b": 98.7012987012987,
+          "ORACLE": 100.0
+        },
+        "reckoning": {
+          "nova-lite": 1.25,
+          "nova-pro": 2.5,
+          "llama-3-3-70b": 46.25,
+          "ORACLE": 46.25
+        },
+        "lore": {
+          "nova-lite": 27.351717941435652,
+          "nova-pro": 14.442941501939826,
+          "llama-3-3-70b": 15.300576448969052,
+          "ORACLE": 36.66103871815047
+        }
+      },
+      "by_domain_full": {
+        "prophecy": {
+          "nova-lite": 81.56,
+          "nova-pro": 70.44,
+          "llama-3-3-70b": 76.56,
+          "ORACLE": 85.92
+        },
+        "facts": {
+          "nova-lite": 98.4,
+          "nova-pro": 100.0,
+          "llama-3-3-70b": 99.2,
+          "ORACLE": 100.0
+        },
+        "reckoning": {
+          "nova-lite": 0.8,
+          "nova-pro": 1.6,
+          "llama-3-3-70b": 41.2,
+          "ORACLE": 41.2
+        },
+        "lore": {
+          "nova-lite": 27.230374641457747,
+          "nova-pro": 16.003824705501728,
+          "llama-3-3-70b": 18.590936884007974,
+          "ORACLE": 37.289376278409
+        }
+      }
+    },
+    "lenient": {
+      "gate_test": {
+        "gap": 2.4429967426710135,
+        "passes": false,
+        "oracle_mean": 96.54723127035831,
+        "best_single": "nova-lite",
+        "best_single_mean": 94.1042345276873,
+        "random_mean": 92.52768729641694,
+        "per_model_mean": {
+          "nova-lite": 94.1042345276873,
+          "nova-pro": 91.66123778501628,
+          "llama-3-3-70b": 91.49837133550488
+        }
+      },
+      "gate_full": {
+        "gap": 2.240000000000009,
+        "passes": false,
+        "oracle_mean": 96.48,
+        "best_single": "nova-lite",
+        "best_single_mean": 94.24,
+        "random_mean": 91.628,
+        "per_model_mean": {
+          "nova-lite": 94.24,
+          "nova-pro": 90.46,
+          "llama-3-3-70b": 90.69
+        }
+      },
+      "by_domain_test": {
+        "prophecy": {
+          "nova-lite": 80.14084507042253,
+          "nova-pro": 72.3943661971831,
+          "llama-3-3-70b": 75.91549295774648,
+          "ORACLE": 85.07042253521126
+        },
+        "facts": {
+          "nova-lite": 100.0,
+          "nova-pro": 100.0,
+          "llama-3-3-70b": 98.7012987012987,
+          "ORACLE": 100.0
+        },
+        "reckoning": {
+          "nova-lite": 100.0,
+          "nova-pro": 93.75,
+          "llama-3-3-70b": 95.0,
+          "ORACLE": 100.0
+        },
+        "lore": {
+          "nova-lite": 94.9367088607595,
+          "nova-pro": 98.73417721518987,
+          "llama-3-3-70b": 94.9367088607595,
+          "ORACLE": 100.0
+        }
+      },
+      "by_domain_full": {
+        "prophecy": {
+          "nova-lite": 81.56,
+          "nova-pro": 70.44,
+          "llama-3-3-70b": 76.56,
+          "ORACLE": 85.92
+        },
+        "facts": {
+          "nova-lite": 99.6,
+          "nova-pro": 100.0,
+          "llama-3-3-70b": 99.2,
+          "ORACLE": 100.0
+        },
+        "reckoning": {
+          "nova-lite": 99.6,
+          "nova-pro": 94.8,
+          "llama-3-3-70b": 93.2,
+          "ORACLE": 100.0
+        },
+        "lore": {
+          "nova-lite": 96.2,
+          "nova-pro": 96.6,
+          "llama-3-3-70b": 93.8,
+          "ORACLE": 100.0
+        }
+      }
+    }
+  },
+  "cost": {
+    "per_arm_per_query": {
+      "nova-lite": 2.255082e-05,
+      "nova-pro": 0.00029780400000000004,
+      "llama-3-3-70b": 8.694216e-05
+    },
+    "tokens_by_model": {
+      "nova-lite": [
+        29631,
+        86554
+      ],
+      "nova-pro": [
+        29631,
+        85656
+      ],
+      "llama-3-3-70b": [
+        65665,
+        55088
+      ]
+    },
+    "judge_usd": 2.539526,
+    "run_spend_usd": 2.94682298
+  }
+}

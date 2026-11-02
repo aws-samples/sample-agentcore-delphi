@@ -1,0 +1,188 @@
+{
+  "strict": {
+    "winner": "linear",
+    "artifact_hash": "c8235a2f72172da75dea3b6d720f0b5a",
+    "families": [
+      {
+        "family": "linear",
+        "val_capture": 0.6676667736588477,
+        "val_quality": 68.98715808649918,
+        "p90_ms": 0.04195794463157654
+      },
+      {
+        "family": "prototype",
+        "val_capture": 0.3689165661430219,
+        "val_quality": 61.988929527514266,
+        "p90_ms": 0.0840124674141407
+      },
+      {
+        "family": "knn",
+        "val_capture": 0.6501414941822091,
+        "val_quality": 68.57662812450373,
+        "p90_ms": 9.467404009774327
+      }
+    ],
+    "test": {
+      "router_quality": 68.68669839525754,
+      "router_cost": 0.0004807424104234527,
+      "single_quality": {
+        "nova-lite": 50.97975803704697,
+        "nova-pro": 46.192157585189726,
+        "llama-3-3-70b": 58.302102734425254,
+        "gemma-3-4b": 51.17722798838581,
+        "nova-micro": 49.43254345698848,
+        "ministral-3b": 44.4525518397564,
+        "qwen3-32b": 56.41864416608047,
+        "gemma-3-27b": 58.858065735747914,
+        "deepseek-v3-2": 49.763428188140864,
+        "claude-sonnet-5-5": 50.96905068446101
+      },
+      "single_cost": {
+        "nova-lite": 2.290514657980456e-05,
+        "nova-pro": 0.00030049250814332247,
+        "llama-3-3-70b": 8.644221498371335e-05,
+        "gemma-3-4b": 1.0941237785016287e-05,
+        "nova-micro": 1.2638078175895765e-05,
+        "ministral-3b": 1.1523127035830619e-05,
+        "qwen3-32b": 3.306791530944625e-05,
+        "gemma-3-27b": 3.880175895765473e-05,
+        "deepseek-v3-2": 0.00014140739413680782,
+        "claude-sonnet-5-5": 0.001942413680781759
+      },
+      "best_single": "gemma-3-27b",
+      "oracle_quality": 74.22520323933125,
+      "oracle_cost": 0.00024357605863192181,
+      "random_quality": 51.908199680365875,
+      "capture": 0.7518257847905061,
+      "gap": 15.367137503583336,
+      "mix": {
+        "llama-3-3-70b": 46,
+        "gemma-3-27b": 66,
+        "claude-sonnet-5-5": 42,
+        "deepseek-v3-2": 46,
+        "nova-micro": 33,
+        "nova-pro": 9,
+        "gemma-3-4b": 26,
+        "nova-lite": 21,
+        "qwen3-32b": 14,
+        "ministral-3b": 4
+      },
+      "mix_by_domain": {
+        "reckoning/llama-3-3-70b": 30,
+        "facts/gemma-3-27b": 12,
+        "facts/claude-sonnet-5-5": 14,
+        "prophecy/gemma-3-27b": 25,
+        "reckoning/gemma-3-27b": 26,
+        "facts/llama-3-3-70b": 9,
+        "prophecy/claude-sonnet-5-5": 17,
+        "prophecy/deepseek-v3-2": 27,
+        "lore/nova-micro": 29,
+        "lore/llama-3-3-70b": 7,
+        "facts/nova-pro": 7,
+        "lore/gemma-3-4b": 18,
+        "lore/nova-lite": 11,
+        "lore/deepseek-v3-2": 8,
+        "facts/nova-lite": 9,
+        "facts/nova-micro": 4,
+        "reckoning/claude-sonnet-5-5": 10,
+        "facts/deepseek-v3-2": 9,
+        "reckoning/qwen3-32b": 7,
+        "facts/qwen3-32b": 6,
+        "reckoning/nova-pro": 1,
+        "reckoning/deepseek-v3-2": 2,
+        "lore/claude-sonnet-5-5": 1,
+        "facts/gemma-3-4b": 3,
+        "lore/gemma-3-27b": 3,
+        "prophecy/gemma-3-4b": 2,
+        "reckoning/gemma-3-4b": 3,
+        "facts/ministral-3b": 4,
+        "lore/nova-pro": 1,
+        "reckoning/nova-lite": 1,
+        "lore/qwen3-32b": 1
+      }
+    }
+  },
+  "lenient": {
+    "winner": "knn",
+    "artifact_hash": "7de415bebe18f5d4e54a656098789e5f",
+    "families": [
+      {
+        "family": "linear",
+        "val_capture": 0.5767195767195765,
+        "val_quality": 96.48514851485149,
+        "p90_ms": 0.04157877992838621
+      },
+      {
+        "family": "prototype",
+        "val_capture": 0.623015873015872,
+        "val_quality": 96.83168316831683,
+        "p90_ms": 0.10402528569102287
+      },
+      {
+        "family": "knn",
+        "val_capture": 0.6560846560846545,
+        "val_quality": 97.07920792079207,
+        "p90_ms": 6.63090362213552
+      }
+    ],
+    "test": {
+      "router_quality": 97.94788273615636,
+      "router_cost": 0.0003489670684039088,
+      "single_quality": {
+        "nova-lite": 94.1042345276873,
+        "nova-pro": 91.66123778501628,
+        "llama-3-3-70b": 91.49837133550488,
+        "gemma-3-4b": 85.8957654723127,
+        "nova-micro": 90.6514657980456,
+        "ministral-3b": 88.8599348534202,
+        "qwen3-32b": 93.38762214983713,
+        "gemma-3-27b": 96.74267100977198,
+        "deepseek-v3-2": 96.77524429967427,
+        "claude-sonnet-5-5": 95.76547231270358
+      },
+      "single_cost": {
+        "nova-lite": 2.290514657980456e-05,
+        "nova-pro": 0.00030049250814332247,
+        "llama-3-3-70b": 8.644221498371335e-05,
+        "gemma-3-4b": 1.0941237785016287e-05,
+        "nova-micro": 1.2638078175895765e-05,
+        "ministral-3b": 1.1523127035830619e-05,
+        "qwen3-32b": 3.306791530944625e-05,
+        "gemma-3-27b": 3.880175895765473e-05,
+        "deepseek-v3-2": 0.00014140739413680782,
+        "claude-sonnet-5-5": 0.001942413680781759
+      },
+      "best_single": "deepseek-v3-2",
+      "oracle_quality": 99.70684039087948,
+      "oracle_cost": 0.00023884758957654724,
+      "random_quality": 93.02931596091206,
+      "capture": 0.7365853658536595,
+      "gap": 2.9315960912052077,
+      "mix": {
+        "nova-lite": 204,
+        "deepseek-v3-2": 32,
+        "gemma-3-27b": 29,
+        "nova-pro": 11,
+        "qwen3-32b": 8,
+        "nova-micro": 9,
+        "claude-sonnet-5-5": 14
+      },
+      "mix_by_domain": {
+        "reckoning/nova-lite": 80,
+        "facts/nova-lite": 74,
+        "prophecy/deepseek-v3-2": 30,
+        "prophecy/gemma-3-27b": 28,
+        "lore/nova-lite": 50,
+        "lore/nova-pro": 8,
+        "facts/nova-pro": 3,
+        "lore/qwen3-32b": 8,
+        "lore/nova-micro": 9,
+        "prophecy/claude-sonnet-5-5": 13,
+        "lore/deepseek-v3-2": 2,
+        "lore/gemma-3-27b": 1,
+        "lore/claude-sonnet-5-5": 1
+      }
+    }
+  },
+  "run_spend_usd": 12.458386814999999
+}

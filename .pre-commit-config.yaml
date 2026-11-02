@@ -1,0 +1,9 @@
+# Local secret scan at commit time (LC-U5-11, FR7.5.1). Install once with `pre-commit install`.
+# Deliberately not a CI job: a cloning reader does not inherit a hook, and the account-id
+# check is a separate, local command (delphi-scrub-check). The rev is a pinned release tag, so
+# the hook cannot change underneath; raising it is a deliberate edit.
+repos:
+  - repo: https://github.com/gitleaks/gitleaks
+    rev: v8.30.1
+    hooks:
+      - id: gitleaks

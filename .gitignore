@@ -1,0 +1,56 @@
+__pycache__/
+*.pyc
+.pytest_cache/
+.coverage
+# A CI pip cache; never tracked (D-CG-U5-5).
+.cache/
+# Root-anchored (T-PKG-U3-22): unanchored, these also match a nested src/ package of the
+# same name. node_modules below stays unanchored on purpose (infra/node_modules is real).
+/htmlcov/
+*.egg-info/
+/build/
+/dist/
+.venv/
+venv/
+# eval artifacts / data (kept in S3, referenced by manifest hash — T-INF-4)
+# Root-anchored: an unanchored `data/` also matched src/delphi/data/, excluding that
+# package from the repository entirely. Same for artifacts/.
+/data/
+/artifacts/
+*.log
+# CDK
+infra/cdk.out/
+infra/.venv/
+cdk.context.json
+
+# OS / editor / session junk
+.DS_Store
+*.bkp
+docs/.$*.drawio.bkp
+.claude/
+
+# Logs
+/logs
+*.log
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+pnpm-debug.log*
+lerna-debug.log*
+
+node_modules
+/dist
+dist-ssr
+*.local
+
+# Editor directories and files
+.vscode/*
+!.vscode/extensions.json
+.idea
+.DS_Store
+*.suo
+*.ntvs*
+*.njsproj
+*.sln
+*.sw?
+

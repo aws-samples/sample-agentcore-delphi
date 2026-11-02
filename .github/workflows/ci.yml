@@ -1,0 +1,43 @@
+# CI for this repository (LC-U5-3). This file only sets the platform up; the gate itself is
+# one tracked command, scripts/ci.sh, which a developer runs locally too.
+#
+# CI only, no CD: no deploy job, no environment, no schedule, no manual trigger. The job holds
+# no AWS credential and cannot pick one up: IMDS is disabled, and scripts/ci.sh fails the
+# build if any credential resolves anyway. The token is read-only and every action is pinned
+# to a full commit SHA.
+name: ci
+
+on:
+  pull_request:
+  push:
+    branches: [main]
+
+permissions:
+  contents: read
+
+env:
+  AWS_EC2_METADATA_DISABLED: "true"
+  DELPHI_REQUIRE_NO_AWS_CREDS: "1"
+
+jobs:
+  test:
+    runs-on: ubuntu-latest
+    # A bound against a hung child process, not a duration claim; tune it from the first recorded run.
+    timeout-minutes: 30
+    strategy:
+      fail-fast: false
+      matrix:
+        # 3.11 is the declared floor, 3.13 the container's.
+        python: ["3.11", "3.13"]
+    steps:
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1  # v7.0.1
+        with:
+          persist-credentials: false
+      - uses: actions/setup-python@6d4fd22b20465ccc0f7354476588e8df7c9ca0e0  # v7.1.0
+        with:
+          python-version: ${{ matrix.python }}
+      # node for the in-process CDK synth tests (preinstalled on the runner; no npm, no CLI).
+      - run: node --version
+      # Tests that commit pass their own identity; none is set globally on purpose.
+      - run: python -m venv /tmp/venv && /tmp/venv/bin/pip install -e '.[dev]'
+      - run: . /tmp/venv/bin/activate && bash scripts/ci.sh

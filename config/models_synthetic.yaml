@@ -1,0 +1,56 @@
+# Synthetic candidate pool — "The Council of Delphi".
+# Used ONLY for the offline pipeline dry-run (no Bedrock calls). Each advisor is a
+# fictional "model" with a distinct domain of strength, so their error sets are
+# non-nested by construction and the oracle gate (T-STAT-1) has something to find.
+# Prices are invented but span a realistic >10x range so cost accounting is exercised.
+
+pricing_snapshot:
+  source: synthetic
+  service_code: SyntheticOracle
+  region: mount-parnassus-1
+  publication_date: "2026-07-14"
+  pulled_date: "2026-07-14"
+  pricing_model: on-demand-standard
+
+candidates:
+  - alias: pythia          # the priestess — prophecy & open-ended reasoning
+    id: delphi.pythia-v1
+    family: oracle
+    price_per_1k: {input: 0.00006, output: 0.00024}
+    verified: true
+  - alias: apollo          # god of knowledge, music, light — factual recall
+    id: delphi.apollo-v1
+    family: olympian
+    price_per_1k: {input: 0.003, output: 0.015}
+    verified: true
+  - alias: hermes          # trickster, messenger — code & logic
+    id: delphi.hermes-v1
+    family: olympian
+    price_per_1k: {input: 0.0008, output: 0.0032}
+    verified: true
+  - alias: athena          # strategy & reason — mathematics
+    id: delphi.athena-v1
+    family: olympian
+    price_per_1k: {input: 0.00072, output: 0.00072}
+    verified: true
+  - alias: calliope        # muse of epic poetry — language & QA
+    id: delphi.calliope-v1
+    family: muse
+    price_per_1k: {input: 0.00058, output: 0.00168}
+    verified: true
+  - alias: sibyl           # generalist seer — decent everywhere, best nowhere
+    id: delphi.sibyl-v1
+    family: oracle
+    price_per_1k: {input: 0.0004, output: 0.0016}
+    verified: true
+
+# Judge sits outside every routed family (T-STAT-5). Zeus arbitrates.
+judge:
+  alias: zeus
+  id: delphi.zeus-judge-v1
+  rationale: "Outside oracle/olympian/muse families; the impartial arbiter."
+
+latency_budget_ms:
+  routing_overhead_p90: 150
+  cold_start_total: 10000
+  artifact_load: 3000

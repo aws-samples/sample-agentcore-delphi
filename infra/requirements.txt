@@ -1,0 +1,12 @@
+# CDK app dependencies. aws-cdk-lib includes the L1 aws_bedrockagentcore constructs
+# (CfnRuntime / CfnRuntimeEndpoint). The bedrockagentcore submodule is confirmed present
+# in 2.261.0; pin at/above that so the module resolves.
+aws-cdk-lib>=2.261.0
+constructs>=10.0.0
+# The AwsSolutions rule pack, applied as an Aspect at synth (TS-U6-1). Bounded to one 2.x
+# minor, equal to the dev extra (T-INF-U6-56): a new upstream rule must not turn an unchanged
+# tree red, and the 3.x line removes NagSuppressions. 2.38 measured against aws-cdk-lib 2.261.0.
+cdk-nag>=2.38,<2.39
+# The stack reads each arm's pool from the YAML the container reads (TS-U6-3). Same specifier
+# as [project] dependencies in pyproject.toml.
+pyyaml>=6.0

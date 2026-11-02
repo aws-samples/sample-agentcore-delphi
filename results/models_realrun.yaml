@@ -1,0 +1,40 @@
+# Real-model run (2026-10-28): the three-model real pool, scored on the Delphi Trials minus craft.
+# Candidates and prices are copied unchanged from models_realpool.yaml (July-2026 snapshot).
+# The judge differs from models_realpool.yaml in two checked ways:
+#   * id: the bare openai.gpt-5.4 rejects on-demand Converse; the us. inference profile works.
+#   * price: GPT-5.4 is not in the AWS Price List (checked 2026-10-28). The cap is enforced at
+#     the closest listed OpenAI-on-Bedrock standard price (GPT-6 Astra, us-west-2: $11/$55 per
+#     1M tokens), a deliberate over-estimate. Re-price from tokens_by_model if a figure lands.
+
+pricing_snapshot:
+  source: aws-price-list-api
+  service_code: AmazonBedrock
+  region: us-west-2
+  publication_date: "2026-07-07"
+  pulled_date: "2026-07-15"
+  pricing_model: on-demand-standard
+
+candidates:
+  - alias: nova-lite
+    id: us.amazon.nova-lite-v1:0
+    family: nova
+    price_per_1k: {input: 0.00006, output: 0.00024}
+    verified: true
+  - alias: nova-pro
+    id: us.amazon.nova-pro-v1:0
+    family: nova
+    price_per_1k: {input: 0.0008, output: 0.0032}
+    verified: true
+  - alias: llama-3-3-70b
+    id: us.meta.llama3-3-70b-instruct-v1:0
+    family: llama
+    price_per_1k: {input: 0.00072, output: 0.00072}
+    verified: true
+
+judge:
+  alias: gpt-5-4
+  id: us.openai.gpt-5.4
+  family: openai
+  price_per_1k: {input: 0.011, output: 0.055}
+  price_note: "assumed upper bound; GPT-5.4 not in the Price List on 2026-10-28"
+  rationale: "Outside the routed families (nova/llama)."

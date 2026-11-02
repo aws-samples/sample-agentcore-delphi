@@ -1,0 +1,25 @@
+{
+  "applies_to": "warm",
+  "arm": "router",
+  "captured_on": "2026-10-20",
+  "cold_after_first": 0,
+  "invocations": 201,
+  "max_passes": 45,
+  "n": 200,
+  "passes": 40,
+  "percentile": 90,
+  "percentile_method": "nearest-rank",
+  "prompt_digests": [
+    "7ef895b3086f6c7d2bdd05c44e7f6e1b92fa3e45749c29d2c0c226e61bc82bcb",
+    "ce33fe551c0ebbcbd5049785b68754cec808ecfd0605bfd8dc3444f38db6df05",
+    "4b0097b71e7adccc8e10975d5cbdf84ef7608e68dbfb43d3060a43e8499b2977",
+    "4445c163a821d95b62f5cce798c33f46b0ff1fd5af238277cbda818d2e62e937",
+    "e111f53980aa7abf08550fbd081d479d9be040dbf2c968b2bc7315787e5ad6c8"
+  ],
+  "published_p90_decimals": 1,
+  "published_p90_ms": 0.3,
+  "record_schema_version": 1,
+  "region": "us-west-2",
+  "warmup_records": 1,
+  "workload": "DEMO_PROMPTS (5 prompts)"
+}
