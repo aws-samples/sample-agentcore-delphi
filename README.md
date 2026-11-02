@@ -20,9 +20,10 @@ model: a same-family choice. Delphi routes across model families, such as Nova, 
 Claude, and learns which family's model to call for each request. The reasoning behind that
 design is in [`docs/design.md`](docs/design.md).
 
-This repository is the companion code for a blog post on AWS Builder Center, which walks through
-how the router is built, the tests it has to pass, and what happened against real Bedrock
-models.
+This repository is the companion code for the AWS Builder Center post
+[Delphi: a learned cross-model router on Amazon Bedrock AgentCore](https://builder.aws.com/content/3KktaXNV9u7GSo0LY6hBvyColHK/delphi-a-learned-cross-model-router-on-amazon-bedrock-agentcore),
+which walks through how the router is built, the tests it has to pass, and what happened against
+real Bedrock models.
 
 This is sample code, for non-production usage. Work with your security and legal teams to meet
 your organizational requirements before deployment.
