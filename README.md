@@ -6,6 +6,13 @@ Bedrock Converse API. The router runs serverless on Amazon Bedrock AgentCore Run
 comes with a test harness that checks whether routing beats sending every request to one model,
 and reports a negative result when it does not.
 
+The approach comes from open-source learned routers such as
+[RouteLLM](https://github.com/lm-sys/routellm) and [LLMRouter](https://github.com/ulab-uiuc/LLMRouter).
+Delphi reimplements their core idea, a model that predicts answer quality per request, and adapts
+it for AgentCore Runtime: routing across model families and providers, serverless hosting, and a
+test harness that reports when routing does not pay off. It uses no code from either project; how
+it relates to them is in [`docs/design.md`](docs/design.md).
+
 Amazon Bedrock already has a native router,
 [Intelligent Prompt Routing](https://docs.aws.amazon.com/bedrock/latest/userguide/prompt-routing.html),
 which chooses between models in the same model family, for example a smaller and a larger Claude
